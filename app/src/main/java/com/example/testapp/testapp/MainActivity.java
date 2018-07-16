@@ -15,6 +15,7 @@ import android.widget.TextView;
 import org.json.*;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Timer;
@@ -117,9 +118,6 @@ public class MainActivity extends AppCompatActivity {
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
-
-        List<String> thing = list;
-        thing.clear();
         adapter = new RecyclerAdapter(list);
         recyclerViewMain.setHasFixedSize(true);
         recyclerViewMain.setAdapter(adapter);
@@ -135,11 +133,16 @@ public class MainActivity extends AppCompatActivity {
                     Thread.sleep(1000);
                     //final String data = (String) getHttpResponse();  //1000ms = 1 sec
                     getHttpResponseAsync("https://nerf-data-app-api.herokuapp.com/status/Red");  //1000ms = 1 sec
+
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             teamObject = new TeamObject(result);
-                            myTextView.setText(String.format("%s Team - %s Seconds", teamObject.teamName, teamObject.elapsedTimeInSeconds));
+                            String text = String.format("%s Team - %s Seconds", teamObject.teamName, teamObject.elapsedTimeInSeconds);
+                            myTextView.setText(text);
+                            ArrayList arrayList = new ArrayList();
+                            arrayList.add(text);
+                            recyclerViewMain.setAdapter(new RecyclerAdapter(new ArrayList(arrayList)));
                         }
                     });
                 } catch (Exception e) {
