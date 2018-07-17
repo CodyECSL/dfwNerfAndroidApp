@@ -1,6 +1,7 @@
 package com.example.testapp.testapp;
 
 import android.os.Bundle;
+import android.speech.tts.TextToSpeech;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
@@ -18,6 +19,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Timer;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -58,6 +60,9 @@ public class MainActivity extends AppCompatActivity {
     private int randomCounter = 0;
     private String result = "";
     private TeamObject teamObject = null;
+    private TeamObject currentActiveTeam = new TeamObject("{\"teamName\":\"dude\"}");
+
+    TextToSpeech t1;
 
     private RecyclerView recyclerViewMain;
     private RecyclerView.LayoutManager layoutManager;
@@ -97,10 +102,53 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 service.submit(new Runnable() {
                     public void run() {
-                        getHttpResponse("https://nerf-data-app-api.herokuapp.com/reset");
-                        getHttpResponse("https://nerf-data-app-api.herokuapp.com/startTimer/Red");
+                        try {
+                            getHttpResponseAsync("https://nerf-data-app-api.herokuapp.com/startTimer/Red");
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     }
                 });
+            }
+        });
+
+        final Button btnStartBlueTimer = findViewById(R.id.btnStartBlueTimer);
+        btnStartBlueTimer.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                service.submit(new Runnable() {
+                    public void run() {
+                        try {
+                            getHttpResponseAsync("https://nerf-data-app-api.herokuapp.com/startTimer/Blue");
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+            }
+        });
+
+        final Button btnReset = findViewById(R.id.btnReset);
+        btnReset.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                service.submit(new Runnable() {
+                    public void run() {
+                        try {
+                            getHttpResponseAsync("https://nerf-data-app-api.herokuapp.com/reset");
+                            currentActiveTeam = new TeamObject("{\"teamName\":\"dude\"}");
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+            }
+        });
+
+        t1=new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if(status != TextToSpeech.ERROR) {
+                    t1.setLanguage(Locale.US);
+                }
             }
         });
 
@@ -113,8 +161,8 @@ public class MainActivity extends AppCompatActivity {
         recyclerViewMain.setAdapter(adapter);
 
         mTextMessage = (TextView) findViewById(R.id.message);
-        myTextView = (TextView) findViewById(R.id.redTeamText);
-        myTextView.setText("Even more sample text");
+        //myTextView = (TextView) findViewById(R.id.redTeamText);
+        //myTextView.setText("Even more sample text");
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
@@ -130,19 +178,34 @@ public class MainActivity extends AppCompatActivity {
         public void run(){
             while(!isInterrupted()){
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(500);
                     //final String data = (String) getHttpResponse();  //1000ms = 1 sec
-                    getHttpResponseAsync("https://nerf-data-app-api.herokuapp.com/status/Red");  //1000ms = 1 sec
+                    getHttpResponseAsync("https://nerf-data-app-api.herokuapp.com/status/");  //1000ms = 1 sec
 
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            teamObject = new TeamObject(result);
-                            String text = String.format("%s Team - %s Seconds", teamObject.teamName, teamObject.elapsedTimeInSeconds);
-                            myTextView.setText(text);
-                            ArrayList arrayList = new ArrayList();
-                            arrayList.add(text);
-                            recyclerViewMain.setAdapter(new RecyclerAdapter(new ArrayList(arrayList)));
+                            try {
+                                JSONArray jsonArray = new JSONArray(result);
+                                ArrayList teamObjectArray = new ArrayList();
+                                ArrayList arrayList = new ArrayList();
+                                for (int i = 0; i < jsonArray.length(); i++) {
+                                    JSONObject jsonObject = jsonArray.getJSONObject(i);
+                                    TeamObject teamObject = new TeamObject(jsonObject.toString());
+                                    teamObjectArray.add(teamObject);
+                                    if (teamObject.isActive) {
+                                        if (!currentActiveTeam.teamName.equals(teamObject.teamName)) {
+                                            currentActiveTeam = teamObject;
+                                            String tts = String.format("%s %s %s", teamObject.teamName, teamObject.teamName, teamObject.teamName);
+                                            t1.speak(tts, TextToSpeech.QUEUE_FLUSH, null, null);
+                                        }
+                                    }
+                                    arrayList.add(String.format("%s Team - %s Seconds", teamObject.teamName, teamObject.elapsedTimeInSeconds));
+                                }
+                                recyclerViewMain.setAdapter(new RecyclerAdapter(new ArrayList(arrayList)));
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
                         }
                     });
                 } catch (Exception e) {
