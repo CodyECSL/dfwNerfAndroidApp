@@ -5,7 +5,6 @@ import android.speech.tts.TextToSpeech;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -61,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
     private String result = "";
     private TeamObject teamObject = null;
     private TeamObject currentActiveTeam = new TeamObject("{\"teamName\":\"dude\"}");
+    private String endpointBaseUrl = "https://nerf-data-app-api.herokuapp.com/";
 
     TextToSpeech t1;
 
@@ -103,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
                 service.submit(new Runnable() {
                     public void run() {
                         try {
-                            getHttpResponseAsync("https://nerf-data-app-api.herokuapp.com/startTimer/Red");
+                            getHttpResponseAsync(endpointBaseUrl + "startTimer/Red");
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -118,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
                 service.submit(new Runnable() {
                     public void run() {
                         try {
-                            getHttpResponseAsync("https://nerf-data-app-api.herokuapp.com/startTimer/Blue");
+                            getHttpResponseAsync(endpointBaseUrl + "startTimer/Blue");
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -133,8 +133,9 @@ public class MainActivity extends AppCompatActivity {
                 service.submit(new Runnable() {
                     public void run() {
                         try {
-                            getHttpResponseAsync("https://nerf-data-app-api.herokuapp.com/reset");
+                            getHttpResponseAsync(endpointBaseUrl + "reset");
                             currentActiveTeam = new TeamObject("{\"teamName\":\"dude\"}");
+                            t1.speak("TIMER RESET", TextToSpeech.QUEUE_FLUSH, null, null);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -180,7 +181,7 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     Thread.sleep(500);
                     //final String data = (String) getHttpResponse();  //1000ms = 1 sec
-                    getHttpResponseAsync("https://nerf-data-app-api.herokuapp.com/status/");  //1000ms = 1 sec
+                    getHttpResponseAsync(endpointBaseUrl + "status/");  //1000ms = 1 sec
 
                     runOnUiThread(new Runnable() {
                         @Override
