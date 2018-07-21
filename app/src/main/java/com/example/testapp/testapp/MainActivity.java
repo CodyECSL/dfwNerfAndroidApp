@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -60,7 +61,12 @@ public class MainActivity extends AppCompatActivity {
     private String result = "";
     private TeamObject teamObject = null;
     private TeamObject currentActiveTeam = new TeamObject("{\"teamName\":\"dude\"}");
+
     private String endpointBaseUrl = "https://nerf-data-app-api.herokuapp.com/";
+    private String endpointRedTeamTimer = "startTimer/Red";
+    private String endpointBlueTeamTimer = "startTimer/Blue";
+    private String endpointStatus = "status";
+    private String endpointReset = "reset";
 
     TextToSpeech t1;
 
@@ -103,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
                 service.submit(new Runnable() {
                     public void run() {
                         try {
-                            getHttpResponseAsync(endpointBaseUrl + "startTimer/Red");
+                            getHttpResponseAsync(endpointBaseUrl + endpointRedTeamTimer);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -118,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
                 service.submit(new Runnable() {
                     public void run() {
                         try {
-                            getHttpResponseAsync(endpointBaseUrl + "startTimer/Blue");
+                            getHttpResponseAsync(endpointBaseUrl + endpointBlueTeamTimer);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -133,7 +139,7 @@ public class MainActivity extends AppCompatActivity {
                 service.submit(new Runnable() {
                     public void run() {
                         try {
-                            getHttpResponseAsync(endpointBaseUrl + "reset");
+                            getHttpResponseAsync(endpointBaseUrl + endpointReset);
                             currentActiveTeam = new TeamObject("{\"teamName\":\"dude\"}");
                             t1.speak("TIMER RESET", TextToSpeech.QUEUE_FLUSH, null, null);
                         } catch (Exception e) {
@@ -156,20 +162,14 @@ public class MainActivity extends AppCompatActivity {
         recyclerViewMain = findViewById(R.id.recyclerViewMain);
         layoutManager = new LinearLayoutManager(this);
         recyclerViewMain.setLayoutManager(layoutManager);
-        list = Arrays.asList(getResources().getStringArray(R.array.android_versions));
+        list = Arrays.asList();
         adapter = new RecyclerAdapter(list);
         recyclerViewMain.setHasFixedSize(true);
         recyclerViewMain.setAdapter(adapter);
 
         mTextMessage = (TextView) findViewById(R.id.message);
-        //myTextView = (TextView) findViewById(R.id.redTeamText);
-        //myTextView.setText("Even more sample text");
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-
-        adapter = new RecyclerAdapter(list);
-        recyclerViewMain.setHasFixedSize(true);
-        recyclerViewMain.setAdapter(adapter);
 
         t.start();
     }
@@ -181,7 +181,7 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     Thread.sleep(500);
                     //final String data = (String) getHttpResponse();  //1000ms = 1 sec
-                    getHttpResponseAsync(endpointBaseUrl + "status/");  //1000ms = 1 sec
+                    getHttpResponseAsync(endpointBaseUrl + endpointStatus);  //1000ms = 1 sec
 
                     runOnUiThread(new Runnable() {
                         @Override
@@ -252,5 +252,28 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        try {
+            switch (keyCode) {
+            case KeyEvent.KEYCODE_0:
+                getHttpResponseAsync(endpointBaseUrl + endpointRedTeamTimer);
+                return true;
+            case KeyEvent.KEYCODE_1:
+                getHttpResponseAsync(endpointBaseUrl + endpointBlueTeamTimer);
+                return true;
+            case KeyEvent.KEYCODE_2:
+                return true;
+            case KeyEvent.KEYCODE_3:
+                return true;
+            default:
+                return super.onKeyUp(keyCode, event);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return super.onKeyUp(keyCode, event);
+        }
     }
 }
