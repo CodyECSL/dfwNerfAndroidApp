@@ -1,4 +1,4 @@
-package com.example.testapp.testapp;
+package com.codyecsl.dfw.nerfapp;
 
 import org.junit.Test;
 

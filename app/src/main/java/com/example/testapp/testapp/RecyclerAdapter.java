@@ -1,4 +1,4 @@
-package com.example.testapp.testapp;
+package com.codyecsl.dfw.nerfapp;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
