@@ -259,9 +259,11 @@ public class MainActivity extends AppCompatActivity {
         try {
             switch (keyCode) {
             case KeyEvent.KEYCODE_0:
+            case KeyEvent.KEYCODE_NUMPAD_0:
                 getHttpResponseAsync(endpointBaseUrl + endpointRedTeamTimer);
                 return true;
             case KeyEvent.KEYCODE_1:
+            case KeyEvent.KEYCODE_NUMPAD_1:
                 getHttpResponseAsync(endpointBaseUrl + endpointBlueTeamTimer);
                 return true;
             case KeyEvent.KEYCODE_2:
