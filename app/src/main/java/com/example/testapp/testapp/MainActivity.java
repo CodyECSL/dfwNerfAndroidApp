@@ -62,11 +62,13 @@ public class MainActivity extends AppCompatActivity {
     private TeamObject teamObject = null;
     private TeamObject currentActiveTeam = new TeamObject("{\"teamName\":\"dude\"}");
 
-    private String endpointBaseUrl = "https://nerf-data-app-api.herokuapp.com/";
-    private String endpointRedTeamTimer = "startTimer/Red";
-    private String endpointBlueTeamTimer = "startTimer/Blue";
-    private String endpointStatus = "status";
-    private String endpointReset = "reset";
+    private String endpointBaseUrl = "https://nerf-data-api-dfw.herokuapp.com/";
+    private String endpointRedTeamTimer = "koth/startTimer/Red";
+    private String endpointBlueTeamTimer = "koth/startTimer/Blue";
+    private String endpointStatus = "koth/status";
+    private String endpointReset = "koth/reset";
+
+    String navBarFirstButtonText;
 
     TextToSpeech t1;
 
@@ -81,10 +83,10 @@ public class MainActivity extends AppCompatActivity {
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
         @Override
-        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        public boolean onNavigationItemSelected(@NonNull MenuItem item) {;
             switch (item.getItemId()) {
                 case R.id.navigation_home:
-                    mTextMessage.setText(R.string.title_home);
+                    mTextMessage.setText(navBarFirstButtonText);
                     return true;
                 case R.id.navigation_dashboard:
                     mTextMessage.setText(R.string.title_dashboard);
@@ -101,7 +103,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
 
         final Button btnStartRedTimer = findViewById(R.id.btnStartRedTimer);
         btnStartRedTimer.setOnClickListener(new View.OnClickListener() {
@@ -168,6 +169,9 @@ public class MainActivity extends AppCompatActivity {
         recyclerViewMain.setAdapter(adapter);
 
         mTextMessage = (TextView) findViewById(R.id.message);
+        navBarFirstButtonText = getResources().getString(R.string.title_home) + " - " + endpointBaseUrl;
+        mTextMessage.setText(navBarFirstButtonText);
+
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
@@ -179,7 +183,7 @@ public class MainActivity extends AppCompatActivity {
         public void run(){
             while(!isInterrupted()){
                 try {
-                    Thread.sleep(500);
+                    Thread.sleep(1000);
                     //final String data = (String) getHttpResponse();  //1000ms = 1 sec
                     getHttpResponseAsync(endpointBaseUrl + endpointStatus);  //1000ms = 1 sec
 
