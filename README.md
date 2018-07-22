@@ -12,4 +12,4 @@ This app grabs data from the API and displays it as useful info on an Android De
 A version of Android Studio version 3.1.3 or higher is needed
 
 ## Current WIP Preview
-![Image](https://cdn.discordapp.com/attachments/309040539846836225/470380569977683970/unknown.png)
+![Image](https://raw.githubusercontent.com/ccoane/dfwNerfAndroidApp/master/wipAndroid.png)
