@@ -53,7 +53,8 @@
             android:layout_weight="0"
             android:background="@android:color/holo_red_light"
             android:text="Start Red"
-            android:textColor="@android:color/background_light" />
+            android:textColor="@android:color/background_light"
+            android:textSize="12sp" />
 
         <Button
             android:id="@+id/btnStartBlueTimer"
@@ -62,7 +63,18 @@
             android:layout_weight="0"
             android:background="@android:color/holo_blue_light"
             android:text="Start Blue"
-            android:textColor="@android:color/background_light" />
+            android:textColor="@android:color/background_light"
+            android:textSize="12sp" />
+
+        <Button
+            android:id="@+id/btnStartGreenTimer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0"
+            android:background="@android:color/holo_green_light"
+            android:text="Start Green"
+            android:textColor="@android:color/background_light"
+            android:textSize="12sp" />
 
         <Button
             android:id="@+id/btnReset"

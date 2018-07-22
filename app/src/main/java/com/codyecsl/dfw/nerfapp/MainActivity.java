@@ -65,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
     private String endpointBaseUrl = "https://nerf-data-api-dfw.herokuapp.com/";
     private String endpointRedTeamTimer = "koth/startTimer/Red";
     private String endpointBlueTeamTimer = "koth/startTimer/Blue";
+    private String endpointGreenTeamTimer = "koth/startTimer/Green";
     private String endpointStatus = "koth/status";
     private String endpointReset = "koth/reset";
 
@@ -87,12 +88,15 @@ public class MainActivity extends AppCompatActivity {
             switch (item.getItemId()) {
                 case R.id.navigation_home:
                     mTextMessage.setText(navBarFirstButtonText);
+                    recyclerViewMain.setVisibility(View.VISIBLE);
                     return true;
                 case R.id.navigation_dashboard:
                     mTextMessage.setText(R.string.title_dashboard);
+                    recyclerViewMain.setVisibility(View.INVISIBLE);
                     return true;
                 case R.id.navigation_notifications:
                     mTextMessage.setText(R.string.title_notifications);
+                    recyclerViewMain.setVisibility(View.INVISIBLE);
                     return true;
             }
             return false;
@@ -126,6 +130,21 @@ public class MainActivity extends AppCompatActivity {
                     public void run() {
                         try {
                             getHttpResponseAsync(endpointBaseUrl + endpointBlueTeamTimer);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+            }
+        });
+
+        final Button btnStartGreenTimer = findViewById(R.id.btnStartGreenTimer);
+        btnStartGreenTimer.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                service.submit(new Runnable() {
+                    public void run() {
+                        try {
+                            getHttpResponseAsync(endpointBaseUrl + endpointGreenTeamTimer);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -271,6 +290,8 @@ public class MainActivity extends AppCompatActivity {
                 getHttpResponseAsync(endpointBaseUrl + endpointBlueTeamTimer);
                 return true;
             case KeyEvent.KEYCODE_2:
+            case KeyEvent.KEYCODE_NUMPAD_2:
+                getHttpResponseAsync(endpointBaseUrl + endpointGreenTeamTimer);
                 return true;
             case KeyEvent.KEYCODE_3:
                 return true;
